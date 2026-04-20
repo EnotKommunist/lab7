@@ -7,8 +7,6 @@ namespace laba_7_2
     {
         static void Main()
         {
-            Console.WriteLine("=== ЗАДАНИЯ 6-10: КОЛЛЕКЦИИ ===\n");
-
             // ==================== ЗАДАНИЕ 6 ====================
             Console.WriteLine("--- ЗАДАНИЕ 6 (List) ---");
             List<int> numbers = new List<int> { 1, 2, 3, 2, 4, 2, 5 };
