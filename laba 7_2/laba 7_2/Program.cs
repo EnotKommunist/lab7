@@ -105,9 +105,6 @@ namespace laba_7_2
 
             double average = CollectionTasks.CalculateAverageEmployeesPerDepartment(task10File);
             Console.WriteLine($"\nСреднее количество сотрудников в подразделении: {average:F2}");
-
-            Console.WriteLine("\n=== Программа завершена ===");
-            Console.ReadKey();
         }
 
         // Вспомогательные методы для вывода
