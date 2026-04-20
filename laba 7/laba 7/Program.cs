@@ -7,8 +7,6 @@ namespace laba_7
     {
         static void Main()
         {
-            Console.WriteLine("=== Демонстрация работы всех заданий ===\n");
-
             Console.WriteLine("--- ЗАДАНИЕ 1 ---");
             string task1File = "task1.txt";
             Class1.GenerateFileTask1(task1File, 15, 0, 20);
