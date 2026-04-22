@@ -108,8 +108,6 @@ namespace laba_7_2
         // Вспомогательные методы для вывода
         static string ListToString<T>(List<T> list)
         {
-            if (list.Count == 0) return "[]";
-
             string result = "[";
             for (int i = 0; i < list.Count; i++)
             {
@@ -123,8 +121,6 @@ namespace laba_7_2
 
         static string LinkedListToString<T>(LinkedList<T> list)
         {
-            if (list.Count == 0) return "[]";
-
             string result = "[";
             LinkedListNode<T> current = list.First;
             while (current != null)
@@ -140,8 +136,6 @@ namespace laba_7_2
 
         static string SetToString<T>(HashSet<T> set)
         {
-            if (set.Count == 0) return "{}";
-
             string result = "{";
             int count = 0;
             foreach (T item in set)
