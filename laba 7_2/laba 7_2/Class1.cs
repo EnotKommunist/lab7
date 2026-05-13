@@ -26,21 +26,25 @@ namespace laba_7_2
             if (list.Count < 2)
                 return;
 
+            // Находим первое вхождение
             LinkedListNode<T> firstNode = list.First;
             while (firstNode != null && !firstNode.Value.Equals(element))
             {
                 firstNode = firstNode.Next;
             }
 
+            // Находим последнее вхождение
             LinkedListNode<T> lastNode = list.Last;
             while (lastNode != null && !lastNode.Value.Equals(element))
             {
                 lastNode = lastNode.Previous;
             }
 
+            // Если элемент не найден или найден только один раз
             if (firstNode == null || lastNode == null || firstNode == lastNode)
                 return;
 
+            // Собираем элементы между first и last
             List<T> middleElements = new List<T>();
             LinkedListNode<T> current = firstNode.Next;
 
@@ -50,6 +54,7 @@ namespace laba_7_2
                 current = current.Next;
             }
 
+            // Переворачиваем список
             for (int i = 0; i < middleElements.Count / 2; i++)
             {
                 T temp = middleElements[i];
@@ -57,6 +62,7 @@ namespace laba_7_2
                 middleElements[middleElements.Count - 1 - i] = temp;
             }
 
+            // Вставляем обратно
             current = firstNode.Next;
             for (int i = 0; i < middleElements.Count; i++)
             {
@@ -108,22 +114,26 @@ namespace laba_7_2
         //ЗАДАНИЕ 9 (HashSet с текстом)
         public static List<char> FindFrequentVoicedConsonants(string filePath)
         {
+            // Звонкие согласные русского алфавита
             HashSet<char> voicedConsonants = new HashSet<char>
             {
                 'б', 'в', 'г', 'д', 'ж', 'з',
                 'Б', 'В', 'Г', 'Д', 'Ж', 'З'
             };
 
+            // Словарь для подсчёта вхождений каждой буквы
             Dictionary<char, int> letterCount = new Dictionary<char, int>();
             foreach (char c in voicedConsonants)
             {
                 letterCount[c] = 0;
+                // Добавляем и строчную, и заглавную версии
                 if (char.IsUpper(c))
                 {
                     letterCount[char.ToLower(c)] = 0;
                 }
             }
 
+            // Читаем файл и обрабатываем слова
             string text = File.ReadAllText(filePath, Encoding.UTF8);
             string[] words = SplitIntoWords(text);
 
@@ -132,16 +142,19 @@ namespace laba_7_2
                 if (string.IsNullOrEmpty(word))
                     continue;
 
+                // Находим уникальные звонкие согласные в этом слове
                 HashSet<char> lettersInWord = new HashSet<char>();
                 foreach (char c in word)
                 {
                     char lowerC = char.ToLower(c);
-                    if (voicedConsonants.Contains(c) || voicedConsonants.Contains(char.ToUpper(c)))
+                    if (voicedConsonants.Contains(c) ||
+                        voicedConsonants.Contains(char.ToUpper(c)))
                     {
                         lettersInWord.Add(lowerC);
                     }
                 }
 
+                // Увеличиваем счётчик для каждой найденной буквы
                 foreach (char letter in lettersInWord)
                 {
                     if (letterCount.ContainsKey(letter))
@@ -151,6 +164,7 @@ namespace laba_7_2
                 }
             }
 
+            // Собираем буквы, которые встречаются более чем в одном слове
             List<char> result = new List<char>();
             foreach (KeyValuePair<char, int> pair in letterCount)
             {
@@ -160,11 +174,13 @@ namespace laba_7_2
                 }
             }
 
+            // Сортируем по алфавиту
             SortList(result);
 
             return result;
         }
 
+        // Вспомогательный метод для разбиения текста на слова
         private static string[] SplitIntoWords(string text)
         {
             List<string> words = new List<string>();
@@ -194,6 +210,7 @@ namespace laba_7_2
             return words.ToArray();
         }
 
+        // Вспомогательный метод для сортировки списка (пузырьковая сортировка)
         private static void SortList(List<char> list)
         {
             for (int i = 0; i < list.Count - 1; i++)
@@ -210,64 +227,86 @@ namespace laba_7_2
             }
         }
 
-        //ЗАДАНИЕ 10 (Dictionary/SortedList)
+        //ЗАДАНИЕ 10
         public static double CalculateAverageEmployeesPerDepartment(string filePath)
         {
-            Dictionary<string, int> departmentCount = new Dictionary<string, int>();
+            // Словарь: ключ = телефон (основная часть без последних двух цифр), значение = количество сотрудников
+            Dictionary<string, int> departmentCount =
+                new Dictionary<string, int>();
 
-            using (StreamReader reader = new StreamReader(filePath, Encoding.UTF8))
+            using (StreamReader reader =
+                new StreamReader(filePath, Encoding.UTF8))
             {
+                // Читаем количество сотрудников
                 string firstLine = reader.ReadLine();
-                int n;
-                if (!int.TryParse(firstLine, out n))
-                {
+                if (firstLine == null)
                     return 0;
-                }
 
+                int n;
+                if (!int.TryParse(firstLine.Trim(), out n))
+                    return 0;
+
+                // Обрабатываем каждую строку
                 for (int i = 0; i < n; i++)
                 {
                     string line = reader.ReadLine();
                     if (line == null)
-                    {
                         break;
-                    }
 
+                    // Извлекаем телефон из строки
                     string phone = ExtractPhoneNumber(line);
-                    string lastTwoDigits = GetLastTwoDigits(phone);
+                    if (phone == null)
+                        continue;
 
-                    if (departmentCount.ContainsKey(lastTwoDigits))
+                    // Извлекаем основную часть телефона (без последних двух цифр)
+                    string departmentPhone = GetDepartmentPhone(phone);
+
+                    // Увеличиваем счётчик
+                    if (departmentCount.ContainsKey(departmentPhone))
                     {
-                        departmentCount[lastTwoDigits]++;
+                        departmentCount[departmentPhone] =
+                            departmentCount[departmentPhone] + 1;
                     }
                     else
                     {
-                        departmentCount[lastTwoDigits] = 1;
+                        departmentCount[departmentPhone] = 1;
                     }
                 }
             }
+
+            // Вычисляем среднее количество сотрудников в подразделении
+            if (departmentCount.Count == 0)
+                return 0;
+
             int totalEmployees = 0;
-            foreach (int count in departmentCount.Values)
+            foreach (KeyValuePair<string, int> pair in departmentCount)
             {
-                totalEmployees += count;
+                totalEmployees += pair.Value;
             }
 
             return (double)totalEmployees / departmentCount.Count;
         }
 
+        //извлечение номера телефона из строки
         private static string ExtractPhoneNumber(string line)
         {
+            // Формат: Фамилия И.О. 555-66-77
             string[] parts = line.Split(' ');
 
             if (parts.Length < 3)
                 return null;
 
+            // Телефон - последняя часть
             return parts[parts.Length - 1];
         }
-
-        private static string GetLastTwoDigits(string phone)
+        private static string GetDepartmentPhone(string phone)
         {
-            string[] parts = phone.Split('-');
-            return parts[parts.Length - 1];
+            string[] phoneParts = phone.Split('-');
+
+            if (phoneParts.Length < 3)
+                return phone;
+
+            return phoneParts[0] + "-" + phoneParts[1];
         }
 
         public static void CreateTestFileTask9(string path)
@@ -278,22 +317,20 @@ namespace laba_7_2
                          "Белой даже не была.";
 
             File.WriteAllText(path, text, Encoding.UTF8);
-            Console.WriteLine($"Тестовый файл '{path}' создан.");
         }
 
         public static void CreateTestFileTask10(string path)
         {
             string[] lines = {
-        "5",
-        "Иванов П.С. 555-66-77",
-        "Петров А.В. 555-66-77",
-        "Сидоров М.И. 555-66-88",
-        "Козлов Д.А. 555-66-77",
-        "Смирнов Е.Б. 555-66-99"
-        };
+                "5",
+                "Иванов П.С. 555-66-77",
+                "Петров А.В. 555-66-77",
+                "Сидоров М.И. 555-66-88",
+                "Козлов Д.А. 555-66-77",
+                "Смирнов Е.Б. 555-66-99"
+            };
 
             File.WriteAllLines(path, lines, Encoding.UTF8);
-            Console.WriteLine($"Тестовый файл '{path}' создан.");
         }
     }
 }
